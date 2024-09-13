@@ -36,3 +36,124 @@
     transform: rotate(360deg);
   }
 }
+
+.converter {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 12px; /* Increased border-radius for a smoother look */
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
+  transition: transform 0.3s ease; /* Add transition for hover effect */
+}
+
+.converter:hover {
+  transform: scale(1.02); /* Slightly enlarge on hover */
+}
+
+.currency-input {
+  display: flex;
+  margin: 15px 0; /* Increased margin for spacing */
+  transition: all 0.3s ease;
+}
+
+.currency-input input {
+  flex: 1;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+.currency-input select {
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 15px 0;
+  cursor: pointer;
+  background-color: #61dafb;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 16px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #21a1f1; /* Darker on hover */
+}
+
+button:active {
+  transform: scale(0.95); /* Click effect */
+}
+
+/* Swap button specific styles */
+.swap-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swap-button::before {
+  content: '⇄'; /* Swap icon */
+  margin-right: 8px;
+  transition: transform 0.3s ease;
+}
+
+.swap-button:hover::before {
+  transform: rotate(90deg); /* Rotate icon on hover */
+}
+
+/* Add media queries for mobile responsiveness */
+@media (max-width: 480px) {
+  .converter {
+    max-width: 90%;
+    padding: 15px;
+  }
+
+  .currency-input {
+    flex-direction: column;
+  }
+
+  .currency-input input,
+  .currency-input select {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+  }
+
+  .swap-button::before {
+    margin-right: 0;
+    margin-bottom: 5px;
+  }
+}
+
+/* Optional: Improve touch targets */
+button {
+  min-height: 44px;
+}
+
+/* Optional: Enhance font sizes on smaller devices */
+@media (max-width: 480px) {
+  .converter h2 {
+    font-size: 1.5em;
+  }
+
+  .currency-input input,
+  .currency-input select {
+    font-size: 1em;
+  }
+}
