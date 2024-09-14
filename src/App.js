@@ -1,40 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
-const exchangeRates = {
-  TRY: { EUR: 0.054, INR: 4.5, AED: 0.22 },
-  EUR: { TRY: 18.52, INR: 83.33, AED: 4.05 },
-  INR: { TRY: 0.22, EUR: 0.012, AED: 0.048 },
-  AED: { TRY: 4.54, EUR: 0.25, INR: 20.83 },
-};
+const CURRENCIES = ['TRY', 'INR', 'EUR', 'AED'];
 
 function App() {
   const [from, setFrom] = useState('TRY');
   const [to, setTo] = useState('EUR');
   const [amount, setAmount] = useState('');
   const [converted, setConverted] = useState('');
-  const [isEditing, setIsEditing] = useState(false); // New state to track editing
+  const [exchangeRates, setExchangeRates] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const handleConvert = (amt, fromCurr, toCurr, editing = false) => {
-    if (!amt) {
-      setConverted('');
-      setIsEditing(false);
-      return;
-    }
-    const rate = exchangeRates[fromCurr][toCurr];
-    if (editing) {
-      setAmount((amt / rate).toFixed(2));
-    } else {
-      setConverted((amt * rate).toFixed(2));
-    }
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await fetch(
+          'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json'
+        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch exchange rates.');
+        }
+        const data = await response.json();
+        const filteredRates = {
+          EUR: 1,
+          TRY: data.eur.try,
+          INR: data.eur.inr,
+          AED: data.eur.aed
+        };
+        setExchangeRates(filteredRates);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchExchangeRates();
+  }, []);
+
+  const convert = (value, from, to) => {
+    if (!value || !exchangeRates[from] || !exchangeRates[to]) return '';
+    const eurValue = value / exchangeRates[from];
+    return (eurValue * exchangeRates[to]).toFixed(2);
+  };
+
+  const handleFromAmountChange = (value) => {
+    setAmount(value);
+    setConverted(convert(value, from, to));
+  };
+
+  const handleToAmountChange = (value) => {
+    setConverted(value);
+    setAmount(convert(value, to, from));
   };
 
   const handleSwap = () => {
-    const temp = from;
     setFrom(to);
-    setTo(temp);
-    handleConvert(amount, to, temp);
+    setTo(from);
+    setAmount(converted);
+    setConverted(amount);
   };
+
+  if (loading) {
+    return <div className="converter">Loading exchange rates...</div>;
+  }
+
+  if (error) {
+    return <div className="converter">Error: {error}</div>;
+  }
 
   return (
     <div className="converter">
@@ -43,33 +77,44 @@ function App() {
         <input
           type="number"
           value={amount}
-          onChange={(e) => {
-            setAmount(e.target.value);
-            handleConvert(e.target.value, from, to);
-            setIsEditing(false);
-          }}
+          placeholder="Amount"
+          onChange={(e) => handleFromAmountChange(e.target.value)}
         />
-        <select value={from} onChange={(e) => { setFrom(e.target.value); handleConvert(amount, e.target.value, to); }}>
-          {Object.keys(exchangeRates).map((curr) => (
-            <option key={curr} value={curr}>{curr}</option>
+        <select
+          value={from}
+          onChange={(e) => {
+            setFrom(e.target.value);
+            handleFromAmountChange(amount);
+          }}
+        >
+          {CURRENCIES.map((curr) => (
+            <option key={curr} value={curr}>
+              {curr}
+            </option>
           ))}
         </select>
       </div>
-      <button className="swap-button" onClick={handleSwap}>Swap</button>
+      <button className="swap-button" onClick={handleSwap}>
+        Swap Currencies
+      </button>
       <div className="currency-input">
         <input
           type="number"
           value={converted}
-          readOnly={!isEditing} // Make editable based on state
-          onFocus={() => setIsEditing(true)}
-          onChange={(e) => {
-            setConverted(e.target.value);
-            handleConvert(e.target.value, to, from, true);
-          }}
+          placeholder="Converted"
+          onChange={(e) => handleToAmountChange(e.target.value)}
         />
-        <select value={to} onChange={(e) => { setTo(e.target.value); handleConvert(amount, from, e.target.value); }}>
-          {Object.keys(exchangeRates).map((curr) => (
-            <option key={curr} value={curr}>{curr}</option>
+        <select
+          value={to}
+          onChange={(e) => {
+            setTo(e.target.value);
+            handleFromAmountChange(amount);
+          }}
+        >
+          {CURRENCIES.map((curr) => (
+            <option key={curr} value={curr}>
+              {curr}
+            </option>
           ))}
         </select>
       </div>

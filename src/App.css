@@ -37,123 +37,188 @@
   }
 }
 
-.converter {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 12px; /* Increased border-radius for a smoother look */
-  text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
-  transition: transform 0.3s ease; /* Add transition for hover effect */
-}
-
-.converter:hover {
-  transform: scale(1.02); /* Slightly enlarge on hover */
-}
-
-.currency-input {
-  display: flex;
-  margin: 15px 0; /* Increased margin for spacing */
-  transition: all 0.3s ease;
-}
-
-.currency-input input {
-  flex: 1;
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  transition: border-color 0.3s ease;
-}
-
-.currency-input select {
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  transition: border-color 0.3s ease;
-}
-
-button {
-  padding: 10px 20px;
-  margin: 15px 0;
-  cursor: pointer;
-  background-color: #61dafb;
-  border: none;
-  border-radius: 4px;
-  color: white;
-  font-size: 16px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-button:hover {
-  background-color: #21a1f1; /* Darker on hover */
-}
-
-button:active {
-  transform: scale(0.95); /* Click effect */
-}
-
-/* Swap button specific styles */
-.swap-button {
+/* Enhanced background for a modern look */
+body {
+  background: linear-gradient(135deg, #ece9e6, #ffffff);
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+/* Refined converter container */
+.converter {
+  max-width: 400px;
+  width: 90%;
+  margin: 0 auto;
+  padding: 30px;
+  background: #ffffff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  animation: slideIn 0.6s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.converter h2 {
+  margin-bottom: 20px;
+  color: #333333;
+  font-size: 1.8em;
+  transition: color 0.3s ease;
+}
+
+.converter h2:hover {
+  color: #007BFF;
+}
+
+/* Improved currency input layout */
+.currency-input {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.currency-input input {
+  flex: 2;
+  padding: 12px 16px;
+  font-size: 1em;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.currency-input select {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 1em;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.currency-input input:focus,
+.currency-input select:focus {
+  border-color: #007BFF;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+
+/* Stylish swap button */
+.swap-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #007BFF;
+  color: #ffffff;
+  padding: 12px 20px;
+  margin: 20px 0;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
 .swap-button::before {
-  content: '⇄'; /* Swap icon */
+  content: '⇄';
   margin-right: 8px;
+  font-size: 1.2em;
   transition: transform 0.3s ease;
 }
 
-.swap-button:hover::before {
-  transform: rotate(90deg); /* Rotate icon on hover */
+.swap-button:hover {
+  background-color: #0056b3;
 }
 
-/* Add media queries for mobile responsiveness */
+.swap-button:active {
+  transform: scale(0.95);
+}
+
+.swap-button::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.3);
+  display: block;
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.5s, opacity 1s;
+}
+
+.swap-button:active::after {
+  transform: scale(2.5);
+  opacity: 1;
+  transition: 0s;
+}
+
+/* Refined converted input */
+.currency-input input[readOnly] {
+  background-color: #f1f1f1;
+  cursor: not-allowed;
+}
+
+/* Button ripple effect */
+button {
+  position: relative;
+  overflow: hidden;
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.5s, opacity 1s;
+}
+
+button:active::after {
+  transform: scale(2.5);
+  opacity: 1;
+  transition: 0s;
+}
+
+/* Enhanced mobile responsiveness */
 @media (max-width: 480px) {
   .converter {
-    max-width: 90%;
-    padding: 15px;
+    padding: 20px;
   }
 
   .currency-input {
     flex-direction: column;
+    gap: 8px;
   }
 
-  .currency-input input,
-  .currency-input select {
+  .swap-button {
     width: 100%;
-    margin-bottom: 10px;
+    padding: 14px;
+    font-size: 1.1em;
   }
 
-  button {
-    width: 100%;
-    padding: 12px;
-    font-size: 18px;
-  }
-
-  .swap-button::before {
-    margin-right: 0;
-    margin-bottom: 5px;
-  }
-}
-
-/* Optional: Improve touch targets */
-button {
-  min-height: 44px;
-}
-
-/* Optional: Enhance font sizes on smaller devices */
-@media (max-width: 480px) {
   .converter h2 {
     font-size: 1.5em;
-  }
-
-  .currency-input input,
-  .currency-input select {
-    font-size: 1em;
   }
 }
