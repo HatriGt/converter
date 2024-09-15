@@ -55,6 +55,16 @@ function App() {
     setAmount(convert(value, to, from));
   };
 
+  const handleFromCurrencyChange = (currency) => {
+    setFrom(currency);
+    setConverted(convert(amount, currency, to));
+  };
+
+  const handleToCurrencyChange = (currency) => {
+    setTo(currency);
+    setConverted(convert(amount, from, currency));
+  };
+
   const handleSwap = () => {
     setFrom(to);
     setTo(from);
@@ -82,10 +92,7 @@ function App() {
         />
         <select
           value={from}
-          onChange={(e) => {
-            setFrom(e.target.value);
-            handleFromAmountChange(amount);
-          }}
+          onChange={(e) => handleFromCurrencyChange(e.target.value)}
         >
           {CURRENCIES.map((curr) => (
             <option key={curr} value={curr}>
@@ -106,10 +113,7 @@ function App() {
         />
         <select
           value={to}
-          onChange={(e) => {
-            setTo(e.target.value);
-            handleFromAmountChange(amount);
-          }}
+          onChange={(e) => handleToCurrencyChange(e.target.value)}
         >
           {CURRENCIES.map((curr) => (
             <option key={curr} value={curr}>
