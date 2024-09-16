@@ -3,14 +3,22 @@ import './App.css';
 
 const CURRENCIES = ['TRY', 'INR', 'EUR', 'AED'];
 
+// Fallback exchange rates (updated as of the latest information)
+const FALLBACK_RATES = {
+  EUR: 1,
+  TRY: 37.67,  // 1 EUR = 37.66 TRY
+  INR: 93.04,  // 1 EUR = 93.04 INR
+  AED: 4.07    // 1 EUR = 4.07 AED
+};
+
 function App() {
   const [from, setFrom] = useState('TRY');
   const [to, setTo] = useState('EUR');
   const [amount, setAmount] = useState('');
   const [converted, setConverted] = useState('');
-  const [exchangeRates, setExchangeRates] = useState({});
+  const [exchangeRates, setExchangeRates] = useState(FALLBACK_RATES);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
     const fetchExchangeRates = async () => {
@@ -30,9 +38,12 @@ function App() {
         };
         setExchangeRates(filteredRates);
         setLoading(false);
+        setIsOffline(false);
       } catch (err) {
-        setError(err.message);
+        console.error('Error fetching rates:', err);
+        setExchangeRates(FALLBACK_RATES);
         setLoading(false);
+        setIsOffline(true);
       }
     };
 
@@ -76,13 +87,14 @@ function App() {
     return <div className="converter">Loading exchange rates...</div>;
   }
 
-  if (error) {
-    return <div className="converter">Error: {error}</div>;
-  }
-
   return (
     <div className="converter">
       <h2>Currency Converter</h2>
+      {isOffline && (
+        <div className="offline-notice">
+          You are offline. Using fallback exchange rates.
+        </div>
+      )}
       <div className="currency-input">
         <input
           type="number"
