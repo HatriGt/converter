@@ -10,7 +10,7 @@
       content="Currency Converter App"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/currency-converter-192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" crossorigin="use-credentials" />
     <title>Currency Converter</title>
   </head>
   <body>
@@ -25,6 +25,8 @@
             console.log('ServiceWorker registration failed: ', err);
           });
         });
+      } else {
+        console.log('Service workers are not supported.');
       }
     </script>
   </body>

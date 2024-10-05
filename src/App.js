@@ -21,6 +21,7 @@ function App() {
   const [exchangeRates, setExchangeRates] = useState(FALLBACK_RATES);
   const [loading, setLoading] = useState(true);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   useEffect(() => {
     const fetchExchangeRates = async () => {
@@ -83,8 +84,16 @@ function App() {
       handleOfflineRates();
     };
 
+    const handleBeforeInstallPrompt = (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setDeferredPrompt(e);
+    };
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     if (navigator.onLine) {
       fetchExchangeRates();
@@ -95,6 +104,7 @@ function App() {
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
   }, []);
 
@@ -129,6 +139,20 @@ function App() {
     setTo(from);
     setAmount(converted);
     setConverted(amount);
+  };
+
+  const handleInstallClick = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+        setDeferredPrompt(null);
+      });
+    }
   };
 
   if (loading) {
@@ -183,6 +207,9 @@ function App() {
           ))}
         </select>
       </div>
+      {deferredPrompt && (
+        <button onClick={handleInstallClick}>Install App</button>
+      )}
     </div>
   );
 }
