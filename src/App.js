@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import { ReactComponent as SwapIcon } from './swap-icon.svg';
 
 const CURRENCIES = ['TRY', 'INR', 'EUR', 'AED'];
 
@@ -12,8 +13,8 @@ const FALLBACK_RATES = {
 };
 
 function App() {
-  const [from, setFrom] = useState('TRY');
-  const [to, setTo] = useState('EUR');
+  const [from, setFrom] = useState('AED');  // Changed from 'TRY' to 'AED'
+  const [to, setTo] = useState('INR');      // Changed from 'EUR' to 'INR'
   const [amount, setAmount] = useState('');
   const [converted, setConverted] = useState('');
   const [exchangeRates, setExchangeRates] = useState(FALLBACK_RATES);
@@ -114,7 +115,8 @@ function App() {
         </select>
       </div>
       <button className="swap-button" onClick={handleSwap}>
-        Swap Currencies
+        <SwapIcon className="swap-icon" />
+        <span>Swap</span>
       </button>
       <div className="currency-input">
         <input
