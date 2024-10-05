@@ -137,10 +137,10 @@ function App() {
 
   return (
     <div className="converter">
-      <h2>Currency Converter</h2>
+      <h2>Converter</h2>
       {isOffline && (
         <div className="offline-notice">
-          You are offline. Using {localStorage.getItem('exchangeRates') ? 'stored' : 'fallback'} exchange rates.
+          Offline. Using {localStorage.getItem('exchangeRates') ? 'stored' : 'fallback'} rates.
         </div>
       )}
       <div className="currency-input">
@@ -163,7 +163,7 @@ function App() {
       </div>
       <button className="swap-button" onClick={handleSwap}>
         <SwapIcon className="swap-icon" />
-        <span>Swap</span>
+        Swap
       </button>
       <div className="currency-input">
         <input
