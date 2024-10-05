@@ -2,24 +2,25 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import { ReactComponent as SwapIcon } from './swap-icon.svg';
 
-const CURRENCIES = ['TRY', 'INR', 'EUR', 'AED'];
+const CURRENCIES = ['USD', 'TRY', 'INR', 'EUR', 'AED'];
 
 // Fallback exchange rates (updated as of the latest information)
 const FALLBACK_RATES = {
   EUR: 1,
   TRY: 37.67,  // 1 EUR = 37.66 TRY
-  INR: 93.04,  // 1 EUR = 93.04 INR
-  AED: 4.07    // 1 EUR = 4.07 AED
+  INR: 92.27,  // 1 EUR = 93.04 INR
+  AED: 4.03,    // 1 EUR = 4.03 AED
+  USD: 1.10     // 1 EUR = 1.10 USD
 };
 
 function App() {
-  const [from, setFrom] = useState('AED');  // Changed from 'TRY' to 'AED'
+  const [from, setFrom] = useState('AED');  // Changed from 'USD' to 'AED'
   const [to, setTo] = useState('INR');      // Changed from 'EUR' to 'INR'
   const [amount, setAmount] = useState('');
   const [converted, setConverted] = useState('');
   const [exchangeRates, setExchangeRates] = useState(FALLBACK_RATES);
   const [loading, setLoading] = useState(true);
-  const [isOffline, setIsOffline] = useState(false);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   useEffect(() => {
     const fetchExchangeRates = async () => {
@@ -35,20 +36,66 @@ function App() {
           EUR: 1,
           TRY: data.eur.try,
           INR: data.eur.inr,
-          AED: data.eur.aed
+          AED: data.eur.aed,
+          USD: data.eur.usd
         };
         setExchangeRates(filteredRates);
+        localStorage.setItem('exchangeRates', JSON.stringify(filteredRates));
+        localStorage.setItem('lastFetchTime', Date.now().toString());
         setLoading(false);
         setIsOffline(false);
       } catch (err) {
         console.error('Error fetching rates:', err);
-        setExchangeRates(FALLBACK_RATES);
-        setLoading(false);
-        setIsOffline(true);
+        handleOfflineRates();
       }
     };
 
-    fetchExchangeRates();
+    const handleOfflineRates = () => {
+      const storedRates = localStorage.getItem('exchangeRates');
+      const lastFetchTime = localStorage.getItem('lastFetchTime');
+      
+      if (storedRates && lastFetchTime) {
+        const rates = JSON.parse(storedRates);
+        const fetchTime = parseInt(lastFetchTime);
+        const currentTime = Date.now();
+        const hoursSinceLastFetch = (currentTime - fetchTime) / (1000 * 60 * 60);
+        
+        if (hoursSinceLastFetch < 24) {
+          setExchangeRates(rates);
+          setIsOffline(true);
+          setLoading(false);
+          return;
+        }
+      }
+      
+      setExchangeRates(FALLBACK_RATES);
+      setIsOffline(true);
+      setLoading(false);
+    };
+
+    const handleOnline = () => {
+      setIsOffline(false);
+      fetchExchangeRates();
+    };
+
+    const handleOffline = () => {
+      setIsOffline(true);
+      handleOfflineRates();
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    if (navigator.onLine) {
+      fetchExchangeRates();
+    } else {
+      handleOfflineRates();
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
   }, []);
 
   const convert = (value, from, to) => {
@@ -93,7 +140,7 @@ function App() {
       <h2>Currency Converter</h2>
       {isOffline && (
         <div className="offline-notice">
-          You are offline. Using fallback exchange rates.
+          You are offline. Using {localStorage.getItem('exchangeRates') ? 'stored' : 'fallback'} exchange rates.
         </div>
       )}
       <div className="currency-input">
